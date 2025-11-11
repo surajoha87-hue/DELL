@@ -1,5 +1,5 @@
 #insert query in admin_commisions table
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, render_template, jsonify
 from db_connector import get_connection
 
 routes_post = Blueprint('routes_post', __name__)
@@ -75,4 +75,33 @@ def delete_admin_commission(id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 #      http://127.0.0.1:5000/api/admin_commisions_delete/11 flask postman
-# End of file routes_post.py
+# User form bhar ke submit kare → db me entry ho jaye esa kr skta hu
+@routes_post.route('/users_insert', methods=['POST'])
+def insert_user():
+    try:
+      #  print("FORM DATA RECEIVED:", request.form)  # Debug line
+        first_name = request.form.get('first_name')   # ✅ match HTML
+        email = request.form.get('email')
+        age = request.form.get('age')
+
+        if not first_name or not email or not age:
+            return jsonify({"error": "All fields are required"}), 400
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute(
+            "INSERT INTO users (first_name, email, age) VALUES (%s, %s, %s)",
+            (first_name, email, int(age))
+        )
+
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        return jsonify({"message": "User added successfully"}), 201
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+# http://127.0.0.15000/form flask form    
+# http://127.0.0.1:5000/api/users_insert flask postman form data 
