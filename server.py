@@ -1,25 +1,21 @@
-from flask import Flask, jsonify, render_template
-from routes_get import routes_get    # GET / UPDATE
-from routes_post import routes_post  # POST / INSERT / DELETE
+# server.py
+from flask import Flask
+from routes.routes_post import routes_post
+from routes.routes_get import routes_get
+from routes.routes_update import routes_update
+from routes.routes_delete import routes_delete
 
 app = Flask(__name__)
 
-# Register Blueprints
-app.register_blueprint(routes_get, url_prefix='/api')
-app.register_blueprint(routes_post, url_prefix='/api')  # ← API routes ke liye
+# Register all blueprints
+app.register_blueprint(routes_post, url_prefix="/api")
+app.register_blueprint(routes_get, url_prefix="/api")
+app.register_blueprint(routes_update, url_prefix="/api")
+app.register_blueprint(routes_delete, url_prefix="/api")
 
-# Optional: Root route for testing
-@app.route('/')
-def home_root():
-    return jsonify({"message": "Welcome to Flask API"})
+@app.route("/")
+def home():
+    return "API is running..."
 
-# Optional: Test route
-@app.route('/test')
-def test():
-    return jsonify({"message": "Flask API is running successfully!"})
-@app.route('/form')
-def user_form():
-    return render_template("user_form.html")
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)
