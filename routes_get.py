@@ -1,3 +1,4 @@
+#fetch  data from the database
 from flask import Blueprint, jsonify
 from db_connector import get_connection
 
