@@ -1,36 +1,39 @@
-# db_connect.py
 import os
 import mysql.connector
-from dotenv import load_dotenv
-
-# Load variables from .env (same folder as this script)
-load_dotenv()
+import configparser
 
 def get_connection():
-    """Connect to MySQL using credentials from .env"""
+    """Connect to MySQL using credentials from config/config.ini"""
+    
+    # Absolute path to config.ini
+    config_path = os.path.join(os.path.dirname(__file__), 'config', 'config.ini')
+    
+    if not os.path.exists(config_path):
+        raise FileNotFoundError(f"Config file not found at {config_path}")
+    
+    # Read credentials from config.ini
+    config = configparser.ConfigParser()
+    config.read(config_path)
+    
+    host = config['mysql']['host']
+    user = config['mysql']['user']
+    password = config['mysql']['password']
+    database = config['mysql']['database']
+    
     try:
         connection = mysql.connector.connect(
-            host=os.getenv("DB_HOST"),
-            user=os.getenv("DB_USER"),
-            password=os.getenv("DB_PASSWORD"),
-            database=os.getenv("DB_NAME"),
-           # port=os.getenv("DB_PORT") or 3306   # default MySQL port
+            host=host,
+            user=user,
+            password=password,
+            database=database,
+            autocommit=True 
         )
-        print("Database connection successful")
+        print("Database connection successful UAT")
         return connection
     except mysql.connector.Error as err:
-        print(f"Database connection failed: {err}")
+        print(f"Database connection UAT failed: {err}")
         return None
 
 
-if __name__ == "__main__":
-    # Test the connection
+if __name__ == '__main__':
     conn = get_connection()
-    # if conn:
-    #     # Do a tiny query to prove it works
-    #     cursor = conn.cursor()
-    #     cursor.execute("SELECT * FROM MASTER_USERS;")
-    #     db_name = cursor.fetchone()[0]
-    #     print(f"Currently connected to database: {"UAT"}")
-    #     cursor.close()
-    #     conn.close()
